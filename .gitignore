@@ -1,0 +1,18 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Database file
+food_waste.db
+
+# Environment variables (for future)
+.env
+
+# VS Code settings (optional)
+.vscode/
+
+# OS files
+.DS_Store
