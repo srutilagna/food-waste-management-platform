@@ -13,6 +13,20 @@ CREATE TABLE IF NOT EXISTS food_listings (
     quantity TEXT,
     location TEXT,
     expiry_time TEXT,
+    status TEXT,
+    donor_name TEXT,
+    donor_email TEXT,
+    donor_phone TEXT
+)
+''')
+
+
+conn.execute('''
+CREATE TABLE IF NOT EXISTS requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    food_id INTEGER,
+    receiver_name TEXT,
+    receiver_email TEXT,
     status TEXT
 )
 ''')
@@ -20,4 +34,4 @@ CREATE TABLE IF NOT EXISTS food_listings (
 conn.commit()
 conn.close()
 
-print("Database created successfully")
+print("Database initialized successfully")

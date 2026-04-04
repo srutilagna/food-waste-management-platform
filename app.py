@@ -16,11 +16,14 @@ def add_food():
         quantity = request.form["quantity"]
         location = request.form["location"]
         expiry = request.form["expiry"]
+        donor_name = request.form["donor_name"]
+        donor_email = request.form["donor_email"]
+        donor_phone = request.form["donor_phone"]
 
         db = get_db()
         db.execute(
-            "INSERT INTO food_listings (food_name, quantity, location, expiry_time, status) VALUES (?, ?, ?, ?, ?)",
-            (food, quantity, location, expiry, "Available")
+            "INSERT INTO food_listings (food_name, quantity, location, expiry_time, status, donor_name, donor_email, donor_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (food, quantity, location, expiry, "Available", donor_name, donor_email, donor_phone)
         )
         db.commit()
 
@@ -74,12 +77,24 @@ def init_db():
     conn = sqlite3.connect(db_path)
     conn.execute('''
     CREATE TABLE IF NOT EXISTS food_listings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        food_name TEXT,
-        quantity TEXT,
-        location TEXT,
-        expiry_time TEXT,
-        status TEXT
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    food_name TEXT,
+    quantity TEXT,
+    location TEXT,
+    expiry_time TEXT,
+    status TEXT,
+    donor_name TEXT,
+    donor_email TEXT,
+    donor_phone TEXT
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    food_id INTEGER,
+    receiver_name TEXT,
+    receiver_email TEXT,
+    status TEXT
     )
     ''')
     conn.commit()
