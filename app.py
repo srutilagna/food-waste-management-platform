@@ -5,9 +5,52 @@ import os
 
 app = Flask(__name__)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "database", "food_waste.db")
+
+# 🔹 Initialize DB
+def init_db():
+    os.makedirs(os.path.join(BASE_DIR, "database"), exist_ok=True)
+
+    conn = sqlite3.connect(db_path)
+
+    # Food table
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS food_listings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        food_name TEXT,
+        quantity TEXT,
+        location TEXT,
+        expiry_time TEXT,
+        status TEXT,
+        donor_name TEXT,
+        donor_email TEXT,
+        donor_phone TEXT
+    )
+    ''')
+
+    # Requests table
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        food_id INTEGER,
+        receiver_name TEXT,
+        receiver_email TEXT,
+        status TEXT
+    )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# 🔹 Routes
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
 
 @app.route("/add", methods=["GET", "POST"])
 def add_food():
@@ -22,7 +65,9 @@ def add_food():
 
         db = get_db()
         db.execute(
-            "INSERT INTO food_listings (food_name, quantity, location, expiry_time, status, donor_name, donor_email, donor_phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            """INSERT INTO food_listings 
+            (food_name, quantity, location, expiry_time, status, donor_name, donor_email, donor_phone)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (food, quantity, location, expiry, "Available", donor_name, donor_email, donor_phone)
         )
         db.commit()
@@ -30,6 +75,7 @@ def add_food():
         return redirect("/")
 
     return render_template("add_food.html")
+
 
 @app.route("/list")
 def list_food():
@@ -49,13 +95,27 @@ def list_food():
 
     return render_template("listings.html", foods=foods)
 
-@app.route("/request/<int:id>")
-def request_food(id):
-    db = get_db()
-    db.execute("UPDATE food_listings SET status='Requested' WHERE id=?", (id,))
-    db.commit()
-    return redirect("/list")
 
+# 🔹 Request food
+@app.route("/request/<int:id>", methods=["GET", "POST"])
+def request_food(id):
+    if request.method == "POST":
+        name = request.form["receiver_name"]
+        email = request.form["receiver_email"]
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO requests (food_id, receiver_name, receiver_email, status) VALUES (?, ?, ?, ?)",
+            (id, name, email, "Pending")
+        )
+        db.commit()
+
+        return redirect("/list")
+
+    return render_template("request_food.html")
+
+
+# 🔹 Mark completed
 @app.route("/complete/<int:id>")
 def complete_food(id):
     db = get_db()
@@ -66,40 +126,6 @@ def complete_food(id):
     db.commit()
     return redirect("/list")
 
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "database", "food_waste.db")
-
-def init_db():
-    
-    os.makedirs(os.path.join(BASE_DIR, "database"), exist_ok=True)
-
-    conn = sqlite3.connect(db_path)
-    conn.execute('''
-    CREATE TABLE IF NOT EXISTS food_listings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    food_name TEXT,
-    quantity TEXT,
-    location TEXT,
-    expiry_time TEXT,
-    status TEXT,
-    donor_name TEXT,
-    donor_email TEXT,
-    donor_phone TEXT
-    )
-    ''')
-    conn.execute('''
-    CREATE TABLE IF NOT EXISTS requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    food_id INTEGER,
-    receiver_name TEXT,
-    receiver_email TEXT,
-    status TEXT
-    )
-    ''')
-    conn.commit()
-    conn.close()
-init_db()
 
 if __name__ == "__main__":
     app.run()
