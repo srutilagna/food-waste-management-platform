@@ -115,16 +115,25 @@ def request_food(id):
     return render_template("request_food.html")
 
 
-# 🔹 Mark completed
-@app.route("/complete/<int:id>")
-def complete_food(id):
+@app.route("/complete/<int:food_id>")
+def complete_food(food_id):
     db = get_db()
+
+    # mark food as completed
     db.execute(
         "UPDATE food_listings SET status = ? WHERE id = ?",
-        ("Completed", id)
+        ("Completed", food_id)
     )
+
+    # update all related requests
+    db.execute(
+        "UPDATE requests SET status = ? WHERE food_id = ?",
+        ("Completed", food_id)
+    )
+
     db.commit()
-    return redirect("/list")
+
+    return redirect("/donor")
 
 @app.route("/donor")
 def donor_dashboard():

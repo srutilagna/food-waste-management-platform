@@ -14,13 +14,18 @@
     <td>{{ req.receiver_name }}</td>
     <td>{{ req.receiver_email }}</td>
 
-    <td>
-      {% if req.status == "Pending" %}
-        <a href="/accept/{{ req.id }}/{{ req.food_id }}">Accept</a>
-      {% else %}
-        Accepted
-      {% endif %}
-    </td>
+   <td>
+  {% if req.status == "Pending" %}
+    <a href="/accept/{{ req.id }}/{{ req.food_id }}">Accept</a>
+
+  {% elif req.status == "Accepted" %}
+    <a href="/complete/{{ req.food_id }}">Mark Completed</a>
+
+  {% else %}
+    Completed
+  {% endif %}
+</td>
+    
   </tr>
   {% endfor %}
 </table>
