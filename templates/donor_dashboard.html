@@ -1,0 +1,26 @@
+<h2>Donor Dashboard</h2>
+
+<table border="1">
+  <tr>
+    <th>Food</th>
+    <th>Receiver Name</th>
+    <th>Email</th>
+    <th>Action</th>
+  </tr>
+
+  {% for req in requests %}
+  <tr>
+    <td>{{ req.food_name }}</td>
+    <td>{{ req.receiver_name }}</td>
+    <td>{{ req.receiver_email }}</td>
+
+    <td>
+      {% if req.status == "Pending" %}
+        <a href="/accept/{{ req.id }}/{{ req.food_id }}">Accept</a>
+      {% else %}
+        Accepted
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>

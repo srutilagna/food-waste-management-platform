@@ -126,6 +126,38 @@ def complete_food(id):
     db.commit()
     return redirect("/list")
 
+@app.route("/donor")
+def donor_dashboard():
+    db = get_db()
+
+    requests = db.execute('''
+        SELECT requests.*, food_listings.food_name 
+        FROM requests
+        JOIN food_listings ON requests.food_id = food_listings.id
+    ''').fetchall()
+
+    return render_template("donor_dashboard.html", requests=requests)
+
+
+@app.route("/accept/<int:req_id>/<int:food_id>")
+def accept_request(req_id, food_id):
+    db = get_db()
+
+    # mark selected request as Accepted
+    db.execute(
+        "UPDATE requests SET status = ? WHERE id = ?",
+        ("Accepted", req_id)
+    )
+
+    # update food status
+    db.execute(
+        "UPDATE food_listings SET status = ? WHERE id = ?",
+        ("Accepted", food_id)
+    )
+
+    db.commit()
+
+    return redirect("/donor")
 
 if __name__ == "__main__":
     app.run()
