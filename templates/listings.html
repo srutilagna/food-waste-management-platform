@@ -1,0 +1,29 @@
+<h2>Available Food Listings</h2>
+
+<table border="1">
+  <tr>
+    <th>Food</th>
+    <th>Quantity</th>
+    <th>Location</th>
+    <th>Expiry</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>
+
+  {% for food in foods %}
+  <tr>
+    <td>{{ food.food_name }}</td>
+    <td>{{ food.quantity }}</td>
+    <td>{{ food.location }}</td>
+    <td>{{ food.expiry_time }}</td>
+    <td>{{ food.status }}</td>
+    <td>
+      {% if food.status == "Available" %}
+        <a href="/request/{{ food.id }}">Request</a>
+      {% else %}
+        -
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>

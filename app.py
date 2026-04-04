@@ -26,5 +26,18 @@ def add_food():
 
     return render_template("add_food.html")
 
+@app.route("/list")
+def list_food():
+    db = get_db()
+    foods = db.execute("SELECT * FROM food_listings ORDER BY expiry_time").fetchall()
+    return render_template("listings.html", foods=foods)
+
+@app.route("/request/<int:id>")
+def request_food(id):
+    db = get_db()
+    db.execute("UPDATE food_listings SET status='Requested' WHERE id=?", (id,))
+    db.commit()
+    return redirect("/list")
+
 if __name__ == "__main__":
     app.run(debug=True)
