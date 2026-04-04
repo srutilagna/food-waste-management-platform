@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from database.db import get_db
+import sqlite3
+import os
 
 app = Flask(__name__)
 
@@ -61,6 +63,28 @@ def complete_food(id):
     db.commit()
     return redirect("/list")
 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "database", "food_waste.db")
+
+def init_db():
+    
+    os.makedirs(os.path.join(BASE_DIR, "database"), exist_ok=True)
+
+    conn = sqlite3.connect(db_path)
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS food_listings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        food_name TEXT,
+        quantity TEXT,
+        location TEXT,
+        expiry_time TEXT,
+        status TEXT
+    )
+    ''')
+    conn.commit()
+    conn.close()
+init_db()
 
 if __name__ == "__main__":
     app.run()
