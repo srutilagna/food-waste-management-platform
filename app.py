@@ -28,8 +28,20 @@ def add_food():
 
 @app.route("/list")
 def list_food():
+    location = request.args.get("location")
+
     db = get_db()
-    foods = db.execute("SELECT * FROM food_listings ORDER BY expiry_time ASC").fetchall()
+
+    if location:
+        foods = db.execute(
+            "SELECT * FROM food_listings WHERE location LIKE ? ORDER BY expiry_time ASC",
+            ('%' + location + '%',)
+        ).fetchall()
+    else:
+        foods = db.execute(
+            "SELECT * FROM food_listings ORDER BY expiry_time ASC"
+        ).fetchall()
+
     return render_template("listings.html", foods=foods)
 
 @app.route("/request/<int:id>")
@@ -38,6 +50,8 @@ def request_food(id):
     db.execute("UPDATE food_listings SET status='Requested' WHERE id=?", (id,))
     db.commit()
     return redirect("/list")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
