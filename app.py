@@ -51,7 +51,16 @@ def request_food(id):
     db.commit()
     return redirect("/list")
 
+@app.route("/complete/<int:id>")
+def complete_food(id):
+    db = get_db()
+    db.execute(
+        "UPDATE food_listings SET status = ? WHERE id = ?",
+        ("Completed", id)
+    )
+    db.commit()
+    return redirect("/list")
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

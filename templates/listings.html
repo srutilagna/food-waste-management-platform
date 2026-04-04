@@ -30,15 +30,27 @@
       {% endif %}
     </td>
 
-    <td>{{ food.status }}</td>
-
     <td>
-      {% if food.status == "Available" %}
-        <a href="/request/{{ food.id }}">Request</a>
-      {% else %}
-        Completed
-      {% endif %}
-    </td>
+  {% if food.status == "Available" %}
+    <span style="color:green;">Available</span>
+  {% elif food.status == "Requested" %}
+    <span style="color:orange;">Requested</span>
+  {% else %}
+    <span style="color:gray;">Completed</span>
+  {% endif %}
+</td>
+
+<td>
+  {% if food.status == "Available" %}
+    <a href="/request/{{ food.id }}">Request</a>
+
+  {% elif food.status == "Requested" %}
+    <a href="/complete/{{ food.id }}">Mark Completed</a>
+
+  {% else %}
+    Completed
+  {% endif %}
+</td>
   </tr>
   {% endfor %}
 </table>
