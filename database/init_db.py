@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect("food_waste.db")
+conn = sqlite3.connect("database/food_waste.db")
 
 conn.execute('''
 CREATE TABLE food_listings (

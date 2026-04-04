@@ -15,13 +15,21 @@
     <td>{{ food.food_name }}</td>
     <td>{{ food.quantity }}</td>
     <td>{{ food.location }}</td>
-    <td>{{ food.expiry_time }}</td>
+
+    <td>
+      {{ food.expiry_time }}
+      {% if food.status == "Available" %}
+        <span style="color:red;">(Check Soon)</span>
+      {% endif %}
+    </td>
+
     <td>{{ food.status }}</td>
+
     <td>
       {% if food.status == "Available" %}
         <a href="/request/{{ food.id }}">Request</a>
       {% else %}
-        -
+        Completed
       {% endif %}
     </td>
   </tr>

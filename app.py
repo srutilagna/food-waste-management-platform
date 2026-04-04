@@ -29,7 +29,7 @@ def add_food():
 @app.route("/list")
 def list_food():
     db = get_db()
-    foods = db.execute("SELECT * FROM food_listings ORDER BY expiry_time").fetchall()
+    foods = db.execute("SELECT * FROM food_listings ORDER BY expiry_time ASC").fetchall()
     return render_template("listings.html", foods=foods)
 
 @app.route("/request/<int:id>")
