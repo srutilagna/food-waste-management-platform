@@ -7,6 +7,8 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
 import threading
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 load_dotenv()
 
@@ -105,23 +107,22 @@ def list_food():
     return render_template("listings.html", foods=foods)
 
 
+
+
 def send_email(to_email, subject, body):
-    sender_email = os.environ.get("EMAIL_USER")
-    sender_password = os.environ.get("EMAIL_PASS")
-
-
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = sender_email
-    msg["To"] = to_email
-
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, to_email, msg.as_string())
-        server.quit()
-        print("✅ Email sent successfully")
+        sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
+
+        message = Mail(
+            from_email=os.environ.get("EMAIL_USER"),  # must be verified in SendGrid
+            to_emails=to_email,
+            subject=subject,
+            html_content=body
+        )
+
+        response = sg.send(message)
+        print("✅ Email sent:", response.status_code)
+
     except Exception as e:
         print("❌ Email error:", e)
 
