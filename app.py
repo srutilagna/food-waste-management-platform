@@ -2,6 +2,14 @@ from flask import Flask, render_template, request, redirect
 from database.db import get_db
 import sqlite3
 import os
+import smtplib
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
 
 app = Flask(__name__)
 
@@ -96,21 +104,62 @@ def list_food():
     return render_template("listings.html", foods=foods)
 
 
+def send_email(to_email, subject, body):
+    sender_email = os.environ.get("EMAIL_USER")
+    sender_password = os.environ.get("EMAIL_PASS")
+
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = sender_email
+    msg["To"] = to_email
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, to_email, msg.as_string())
+        server.quit()
+        print("✅ Email sent successfully")
+    except Exception as e:
+        print("❌ Email error:", e)
+
 # 🔹 Request food
 @app.route("/request/<int:id>", methods=["GET", "POST"])
 def request_food(id):
     if request.method == "POST":
-        name = request.form["receiver_name"]
-        email = request.form["receiver_email"]
+       name = request.form["receiver_name"]
+       email = request.form["receiver_email"]
 
-        db = get_db()
-        db.execute(
-            "INSERT INTO requests (food_id, receiver_name, receiver_email, status) VALUES (?, ?, ?, ?)",
-            (id, name, email, "Pending")
-        )
-        db.commit()
+       db = get_db()
 
-        return redirect("/list")
+    
+       db.execute( "INSERT INTO requests (food_id, receiver_name, receiver_email, status) VALUES (?, ?, ?, ?)",
+        (id, name, email, "Pending"))
+    
+       db.commit()
+
+       food = db.execute("SELECT * FROM food_listings WHERE id = ?", (id,)).fetchone()
+
+       subject = f"Food Request Received from {food['donor_name']}"
+    
+       body = f"""
+        Hello {food['donor_name']},
+
+        You have a new request for your food listing:
+
+        Food: {food['food_name']}
+        Receiver Name: {name}
+        Receiver Email: {email}
+
+        Please log in to your dashboard to accept the request.
+
+        Thank you!
+        """
+
+       send_email(food["donor_email"], subject, body)
+
+       return redirect("/list")
 
     return render_template("request_food.html")
 
