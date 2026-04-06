@@ -6,6 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
+import threading
 
 load_dotenv()
 
@@ -115,7 +116,7 @@ def send_email(to_email, subject, body):
     msg["To"] = to_email
 
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
         server.starttls()
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, to_email, msg.as_string())
@@ -157,7 +158,7 @@ def request_food(id):
         Thank you!
         """
 
-       send_email(food["donor_email"], subject, body)
+       threading.Thread(target=send_email,args=(food["donor_email"], subject, body)).start()
 
        return redirect("/list")
 
