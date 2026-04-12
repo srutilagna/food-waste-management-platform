@@ -9,6 +9,8 @@ import os
 import threading
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 
 load_dotenv()
 
@@ -18,6 +20,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(BASE_DIR, "database", "food_waste.db")
+app.secret_key = os.environ.get("SECRET_KEY")
 
 # 🔹 Initialize DB
 def init_db():
@@ -51,6 +54,15 @@ def init_db():
     )
     ''')
 
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT UNIQUE,
+    password TEXT
+    )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -71,7 +83,7 @@ def add_food():
         location = request.form["location"]
         expiry = request.form["expiry"]
         donor_name = request.form["donor_name"]
-        donor_email = request.form["donor_email"]
+        donor_email = session.get("user_email")
         donor_phone = request.form["donor_phone"]
 
         db = get_db()
@@ -168,15 +180,16 @@ def request_food(id):
 
 @app.route("/complete/<int:food_id>")
 def complete_food(food_id):
+    if "user_id" not in session:
+        return redirect("/login")
+
     db = get_db()
 
-    # mark food as completed
     db.execute(
         "UPDATE food_listings SET status = ? WHERE id = ?",
         ("Completed", food_id)
     )
 
-    # update all related requests
     db.execute(
         "UPDATE requests SET status = ? WHERE food_id = ?",
         ("Completed", food_id)
@@ -188,6 +201,9 @@ def complete_food(food_id):
 
 @app.route("/donor")
 def donor_dashboard():
+    if "user_id" not in session:
+        return redirect("/login")
+
     db = get_db()
 
     requests = db.execute('''
@@ -201,15 +217,16 @@ def donor_dashboard():
 
 @app.route("/accept/<int:req_id>/<int:food_id>")
 def accept_request(req_id, food_id):
+    if "user_id" not in session:
+        return redirect("/login")
+
     db = get_db()
 
-    # mark selected request as Accepted
     db.execute(
         "UPDATE requests SET status = ? WHERE id = ?",
         ("Accepted", req_id)
     )
 
-    # update food status
     db.execute(
         "UPDATE food_listings SET status = ? WHERE id = ?",
         ("Accepted", food_id)
@@ -218,6 +235,54 @@ def accept_request(req_id, food_id):
     db.commit()
 
     return redirect("/donor")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        password = generate_password_hash(request.form["password"])
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+            (name, email, password)
+        )
+        db.commit()
+
+        return redirect("/login")
+
+    return render_template("signup.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+
+        db = get_db()
+        user = db.execute(
+            "SELECT * FROM users WHERE email = ?",
+            (email,)
+        ).fetchone()
+
+        if user and check_password_hash(user["password"], password):
+            session["user_id"] = user["id"]
+            session["user_email"] = user["email"]
+            return redirect("/donor")
+
+        return "Invalid credentials"
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
