@@ -1,5 +1,109 @@
-<h1>Food Waste Management</h1>
+{% extends "base.html" %}
+{% block title %}Home - Food Waste Management{% endblock %}
+{% block content %}
 
-<a href="/add">Add Food</a><br><br>
-<a href="/list">View Listings</a>
-<a href="/donor">Donor Dashboard</a><br><br>
+<div class="hero-section">
+    <h1><i class="bi bi-recycle"></i> Fight Food Waste Together</h1>
+    <p>Connect donors with those in need. Share surplus food and build a sustainable community.</p>
+    <div>
+        <a href="/list" class="btn btn-light btn-lg me-3" style="font-weight: 700;">
+            <i class="bi bi-search"></i> Browse Food
+        </a>
+        {% if not session.get('user_id') %}
+            <a href="/signup" class="btn btn-outline-light btn-lg" style="font-weight: 700;">
+                <i class="bi bi-person-plus"></i> Get Started
+            </a>
+        {% else %}
+            <a href="/add" class="btn btn-outline-light btn-lg" style="font-weight: 700;">
+                <i class="bi bi-plus-circle"></i> Add Food
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5 mb-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 feature-card">
+            <div class="feature-icon text-success">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h5 class="card-title fw-bold">Donate Food</h5>
+            <p class="card-text">Share your surplus food with our community easily and securely.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 feature-card">
+            <div class="feature-icon" style="color: var(--secondary);">
+                <i class="bi bi-hand-thumbs-up"></i>
+            </div>
+            <h5 class="card-title fw-bold">Request Food</h5>
+            <p class="card-text">Find fresh food available near you instantly and request it.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 feature-card">
+            <div class="feature-icon text-success">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h5 class="card-title fw-bold">Safe & Verified</h5>
+            <p class="card-text">Secure authentication and verified users for your peace of mind.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 mb-5">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body p-5">
+                <h3 class="mb-4"><i class="bi bi-info-circle" style="color: var(--primary);"></i> How It Works</h3>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div style="font-size: 2.5rem; color: var(--primary); font-weight: bold; margin-bottom: 1rem;">1</div>
+                            <h6 class="fw-bold">Register/Login</h6>
+                            <p class="text-muted">Create an account or login to get started</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div style="font-size: 2.5rem; color: var(--primary); font-weight: bold; margin-bottom: 1rem;">2</div>
+                            <h6 class="fw-bold">List or Browse</h6>
+                            <p class="text-muted">Donate food or find available items near you</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div style="font-size: 2.5rem; color: var(--primary); font-weight: bold; margin-bottom: 1rem;">3</div>
+                            <h6 class="fw-bold">Connect & Share</h6>
+                            <p class="text-muted">Accept requests and share surplus food</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="card" style="background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);">
+            <div class="card-body text-center p-5">
+                <h4 class="fw-bold mb-3">
+                    <i class="bi bi-hand-thumbs-up" style="color: var(--primary);"></i> Make a Difference Today
+                </h4>
+                <p class="mb-4">Join thousands of users fighting food waste and building a stronger community</p>
+                {% if not session.get('user_id') %}
+                    <a href="/signup" class="btn btn-primary btn-lg">
+                        <i class="bi bi-person-check"></i> Create Your Account
+                    </a>
+                {% else %}
+                    <a href="/add" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-seam"></i> Start Donating
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

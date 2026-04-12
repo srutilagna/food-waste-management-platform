@@ -1,14 +1,63 @@
-<h2>Login</h2>
+{% extends "base.html" %}
+{% block title %}Login - Food Waste Management{% endblock %}
+{% block content %}
 
-<form method="POST">
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-5">
+        <div class="form-section">
+            <div class="text-center mb-4">
+                <i class="bi bi-box-arrow-in-right" style="font-size: 3rem; color: var(--primary);"></i>
+                <h2 class="mt-3">Welcome Back!</h2>
+                <p class="text-muted">Login to your Food Waste Management account</p>
+            </div>
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-envelope" style="color: var(--primary);"></i> Email Address
+                    </label>
+                    <input type="email" class="form-control form-control-lg" name="email" placeholder="your.email@example.com" required autofocus>
+                </div>
 
-    <button type="submit">Login</button>
-</form>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-key" style="color: var(--primary);"></i> Password
+                    </label>
+                    <input type="password" class="form-control form-control-lg" name="password" placeholder="Enter your password" required>
+                </div>
 
-<br>
-<a href="/signup">Don't have an account? Signup</a>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Login to Food Waste Management
+                    </button>
+                </div>
+            </form>
+
+            <hr class="my-4">
+
+            <p class="text-center mb-0">
+                Don't have an account?
+                <a href="/signup" class="text-decoration-none fw-bold" style="color: var(--primary);">
+                    Create one now
+                </a>
+            </p>
+        </div>
+
+        <!-- Security Info -->
+        <div class="alert alert-light mt-4 border" style="border-color: var(--primary) !important;">
+            <p class="mb-0 small">
+                <i class="bi bi-shield-check" style="color: var(--primary);"></i>
+                <strong>Your data is secure</strong> - We use industry-standard encryption to protect your information.
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

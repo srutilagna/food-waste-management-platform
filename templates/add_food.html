@@ -1,15 +1,80 @@
-<h2>Add Food</h2>
+{% extends "base.html" %}
+{% block title %}Donate Food - Food Waste Management{% endblock %}
+{% block content %}
 
-<form method="POST">
-  <input name="food" placeholder="Food Name" required><br><br>
-  <input name="quantity" placeholder="Quantity" required><br><br>
-  <input name="location" placeholder="Location" required><br><br>
-  <input name="expiry" type="datetime-local" required><br><br>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-section">
+            <h2 class="mb-4 text-center">
+                <i class="bi bi-box-seam" style="color: var(--primary);"></i> Add Food to Donate
+            </h2>
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-apple" style="color: var(--primary);"></i> Food Name
+                        </label>
+                        <input type="text" class="form-control" name="food" placeholder="e.g., Rice, Vegetables" required>
+                    </div>
 
-  <h3>Donor Details</h3>
-  <input name="donor_name" placeholder="Your Name" required><br><br>
-  <input name="donor_email" type="email" placeholder="Email" required><br><br>
-  <input name="donor_phone" placeholder="Phone Number" required><br><br>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-bag" style="color: var(--primary);"></i> Quantity
+                        </label>
+                        <input type="text" class="form-control" name="quantity" placeholder="e.g., 5 kg, 10 portions" required>
+                    </div>
+                </div>
 
-  <button type="submit">Add Food</button>
-</form>
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-geo-alt" style="color: var(--primary);"></i> Location
+                    </label>
+                    <input type="text" class="form-control" name="location" placeholder="e.g., Downtown, Near Market" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-clock" style="color: var(--primary);"></i> Expiry Time
+                    </label>
+                    <input type="datetime-local" class="form-control" name="expiry" required>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-4">
+                    <i class="bi bi-person-badge" style="color: var(--primary);"></i> Your Details
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person" style="color: var(--primary);"></i> Your Name
+                        </label>
+                        <input type="text" class="form-control" name="donor_name" placeholder="Full Name" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-telephone" style="color: var(--primary);"></i> Phone Number
+                        </label>
+                        <input type="tel" class="form-control" name="donor_phone" placeholder="Your contact number" required>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Email:</strong> Your registered email ({{ session.get('user_email') }}) will be used for receiver notifications.
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> List Food
+                    </button>
+                    <a href="/list" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
